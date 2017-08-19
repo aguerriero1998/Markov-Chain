@@ -1,1 +1,5 @@
 uthash.h
+*.txt
+main
+main.o
+*.swp

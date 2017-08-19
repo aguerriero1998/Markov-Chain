@@ -63,7 +63,12 @@ void generate_n_grams(int n_grams){
         n_gram_array[index] = cur_n_gram;
     }
 
-
+	for(int i = 0; i<num_n_grams; i++){
+		for(int j = 0; j<n_grams; j++){
+			printf("%s ",n_gram_array[i][j]);
+		}
+		printf("\n");
+	}
     
 
 
@@ -74,6 +79,8 @@ void generate_markov_chain(int n_grams){
     
     for(int i = 0; i < num_n_grams; i++){
         n_gram cur_n_gram = n_gram_array[i];
+
+	
         int len = 0;
         for(int word = 0; word < n_grams - 1; word++) len += strlen(cur_n_gram[word]);
        
@@ -83,6 +90,7 @@ void generate_markov_chain(int n_grams){
             key = strcat(key, " ");
             key = strcat(key, cur_n_gram[word]);
         }
+
         int hash_key = (int) hash(key);
         printf("String: %s\n",key);
         markov_chain *entry;
@@ -103,8 +111,8 @@ void generate_markov_chain(int n_grams){
             printf("Found %s!\n",(entry)->cur_state);
             (entry)-> cur_index ++;
             (entry) -> possible_next[(entry)->cur_index] = cur_n_gram[n_grams - 1];
-            for(i = 0; i<= (entry)->cur_index ; i++){
-                printf("%s ",entry->possible_next[i]);
+            for(int j = 0; j<= (entry)->cur_index ; j++){
+                printf("%s ",entry->possible_next[j]);
             }
             printf("\n");
         }
@@ -149,6 +157,7 @@ int main(int argc, char ** argv){
     tokenize(in);
     generate_n_grams(n_grams);
     free(word_array);
+	printf("\n");
     generate_markov_chain(n_grams);
 
     return 0;
