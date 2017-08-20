@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>
 #include "uthash.h"
 
 typedef char ** n_gram;
@@ -29,3 +30,6 @@ void tokenize(FILE * corpus);
 void generate_n_grams(int n_grams);
 unsigned long hash(char *str);
 void generate_markov_chain(int n_grams);
+void babble(FILE *out, unsigned int amount, char * state);
+char * random_state();
+char * next_word(char * curr_state);
