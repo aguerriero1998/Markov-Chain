@@ -1,6 +1,5 @@
 #include "main.h"
 
-
 void usage(char * file){
     printf("Usage: %s n-grams corpus-file output-file\n", file);
     printf(" Reads text from the corpus-file and will generate \n");
@@ -63,14 +62,6 @@ void generate_n_grams(int n_grams){
         n_gram_array[index] = cur_n_gram;
     }
 
-	for(int i = 0; i<num_n_grams; i++){
-		for(int j = 0; j<n_grams; j++){
-			printf("%s ",n_gram_array[i][j]);
-		}
-		printf("\n");
-	}
-    
-
 
     return;
 }
@@ -92,12 +83,10 @@ void generate_markov_chain(int n_grams){
         }
 
         int hash_key = (int) hash(key);
-        printf("String: %s\n",key);
         markov_chain *entry;
         HASH_FIND_INT(m_chain, &hash_key, entry);
 
         if(entry == NULL){
-            printf("Not found. Adding to table\n");
             
             entry = (markov_chain *) malloc(sizeof(markov_chain));
             (entry) -> cur_state = key;
@@ -108,16 +97,9 @@ void generate_markov_chain(int n_grams){
 
             HASH_ADD_INT(m_chain, hash_value ,entry);
         }else{
-            printf("Found %s!\n",(entry)->cur_state);
             (entry)-> cur_index ++;
             (entry) -> possible_next[(entry)->cur_index] = cur_n_gram[n_grams - 1];
-            for(int j = 0; j<= (entry)->cur_index ; j++){
-                printf("%s ",entry->possible_next[j]);
-            }
-            printf("\n");
         }
-        
-            printf("\n");
     }
 
 }
@@ -131,12 +113,76 @@ unsigned long hash(char *str)
     return hash;
 }
 
+char * next_word(char * curr_state){
+    int hash_key = (int) hash(curr_state);
+    markov_chain *entry;
+    HASH_FIND_INT(m_chain, &hash_key, entry);
+
+	if(entry != NULL){
+		int index = rand();
+		index = index & entry->cur_index;
+		return entry->possible_next[index];
+	}
+	return NULL;
+}
+
+char * random_state(){
+
+
+	unsigned int num_states;
+	num_states = HASH_COUNT(m_chain);
+
+	int random = rand() % num_states;
+	markov_chain *entry = m_chain;
+	int i = 0;
+	while(i < random){
+		entry = entry->hh.next;
+		i++;
+	}
+	return entry->cur_state;
+
+}
+
+void babble(FILE *output, unsigned int amount, char * state){
+	printf("Amount: %d Amount %% 20: %d\n", amount, amount % 20);
+	if(amount % 20 == 0){ 
+		fputs("\n", output);
+		printf("New line\n");
+	}
+	if(amount == 0) return;
+
+	char *next = next_word(state);
+	if(next == NULL) return;
+
+	fputs(next, output);
+	fputs(" ", output);
+
+	char *split = strchr(state ,' ');
+	char *next_state = NULL;
+
+	if(split){
+		split ++;
+		next_state = malloc((strlen(split) + 2 + strlen(next)) * sizeof(char));
+		strcpy(next_state, split);
+		strcat(next_state, " ");
+		strcat(next_state, next);
+	}else{
+		
+	}
+	free(state);
+	amount = amount - 1;
+	babble(output,amount,next_state);
+
+}
+
+
 int main(int argc, char ** argv){
     
     if(argc != 4){
         printf("Not enough inputs\n");
         usage(argv[0]);
     }
+	srand((unsigned) time(NULL));
     
     int n_grams = atoi(argv[1]);
     if(n_grams <= 1){
@@ -155,10 +201,16 @@ int main(int argc, char ** argv){
     num_words = 0;
 
     tokenize(in);
+
     generate_n_grams(n_grams);
     free(word_array);
-	printf("\n");
+
     generate_markov_chain(n_grams);
+
+	char * rand_words = random_state();
+	fputs(rand_words, out);
+	fputs(" ", out);
+	babble(out, 100,rand_words);
 
     return 0;
 }
