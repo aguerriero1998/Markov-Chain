@@ -144,10 +144,8 @@ char * random_state(){
 }
 
 void babble(FILE *output, unsigned int amount, char * state){
-	printf("Amount: %d Amount %% 20: %d\n", amount, amount % 20);
 	if(amount % 20 == 0){ 
 		fputs("\n", output);
-		printf("New line\n");
 	}
 	if(amount == 0) return;
 
@@ -167,7 +165,8 @@ void babble(FILE *output, unsigned int amount, char * state){
 		strcat(next_state, " ");
 		strcat(next_state, next);
 	}else{
-		
+        next_state = malloc(strlen(next) * sizeof(char));
+        strcpy(next_state, next);
 	}
 	free(state);
 	amount = amount - 1;
@@ -201,16 +200,16 @@ int main(int argc, char ** argv){
     num_words = 0;
 
     tokenize(in);
-
+    fclose(in);
     generate_n_grams(n_grams);
     free(word_array);
 
     generate_markov_chain(n_grams);
 
 	char * rand_words = random_state();
-	fputs(rand_words, out);
-	fputs(" ", out);
-	babble(out, 100,rand_words);
+	babble(out, 3999,rand_words);
+    fclose(out);
+
 
     return 0;
 }
