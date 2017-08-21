@@ -17,6 +17,7 @@ void grow_word_array(){
 }
 
 void tokenize(FILE * corpus){
+
     char buff[255];
     char *token;
 
@@ -55,7 +56,7 @@ void generate_n_grams(int n_grams){
         for(int ith_word = 0; ith_word < n_grams; ith_word++){
             if(index + n_grams - 1 >= num_words) break;
            
-           char *str = word_array[index + ith_word];
+            char *str = word_array[index + ith_word];
             cur_n_gram[ith_word] = str;
         
         }
@@ -132,6 +133,10 @@ char * random_state(){
 	unsigned int num_states;
 	num_states = HASH_COUNT(m_chain);
 
+    if(num_states == 0){
+        exit(-1);
+    }
+
 	int random = rand() % num_states;
 	markov_chain *entry = m_chain;
 	int i = 0;
@@ -194,13 +199,16 @@ int main(int argc, char ** argv){
     if(in == NULL){
         printf("The file %s was not found\n", argv[2]);
         usage(argv[0]);
+        exit(-1);
     }
     word_array_size = 200;
     word_array = (char **) malloc(word_array_size * sizeof(char *));
     num_words = 0;
 
+
     tokenize(in);
     fclose(in);
+    if(num_words < n_grams) exit(-1);
     generate_n_grams(n_grams);
     free(word_array);
 
