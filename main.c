@@ -1,5 +1,6 @@
 #include "main.h"
 
+
 void usage(char * file){
     printf("Usage: %s n-grams corpus-file output-file\n", file);
     printf(" Reads text from the corpus-file and will generate \n");
@@ -17,12 +18,11 @@ void grow_word_array(){
 }
 
 void tokenize(FILE * corpus){
-
     char buff[255];
     char *token;
 
     while(fgets(buff, 255, corpus)){
-        token = strtok(buff, " \t\n");
+        token = strtok(buff, " \t\n\r\v\f");
         while(token != NULL){
             if(num_words + 1 == word_array_size){
                 grow_word_array();
@@ -211,7 +211,6 @@ int main(int argc, char ** argv){
     if(num_words < n_grams) exit(-1);
     generate_n_grams(n_grams);
     free(word_array);
-
     generate_markov_chain(n_grams);
 
 	char * rand_words = random_state();
