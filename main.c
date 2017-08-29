@@ -144,10 +144,8 @@ char * random_state(){
 }
 
 void babble(FILE *output, unsigned int amount, char * state){
-	printf("Amount: %d Amount %% 20: %d\n", amount, amount % 20);
 	if(amount % 20 == 0){ 
 		fputs("\n", output);
-		printf("New line\n");
 	}
 	if(amount == 0) return;
 
@@ -167,7 +165,7 @@ void babble(FILE *output, unsigned int amount, char * state){
 		strcat(next_state, " ");
 		strcat(next_state, next);
 	}else{
-		
+		//TODO edge case?	
 	}
 	free(state);
 	amount = amount - 1;
@@ -181,6 +179,7 @@ int main(int argc, char ** argv){
     if(argc != 4){
         printf("Not enough inputs\n");
         usage(argv[0]);
+		exit(0);
     }
 	srand((unsigned) time(NULL));
     
@@ -188,6 +187,7 @@ int main(int argc, char ** argv){
     if(n_grams <= 1){
         printf("%s is not a valid input\n",argv[1]);
         usage(argv[0]);
+		exit(0);
     }
     FILE *in = fopen(argv[2],"r");
     FILE *out = fopen(argv[3], "w+");
@@ -195,6 +195,7 @@ int main(int argc, char ** argv){
     if(in == NULL){
         printf("The file %s was not found\n", argv[2]);
         usage(argv[0]);
+		exit(0);
     }
     word_array_size = 200;
     word_array = (char **) malloc(word_array_size * sizeof(char *));
@@ -208,9 +209,9 @@ int main(int argc, char ** argv){
     generate_markov_chain(n_grams);
 
 	char * rand_words = random_state();
-	fputs(rand_words, out);
-	fputs(" ", out);
-	babble(out, 100,rand_words);
+	//fputs(rand_words, out);
+	//fputs(" ", out);
+	babble(out, 3999,rand_words);
 
     return 0;
 }
