@@ -1,8 +1,15 @@
 #include "main.h"
+/* This program generates random text based on an input text using markov chains
+ * The markov chain takes n-1 words to be the state and then selects a random word 
+ * that was preceeded by the n-1 words in the input text
+ * Usage: main n_grams input-file output-file
+ *
+ *
+ */
 
 void usage(char * file){
-    printf("Usage: %s n-grams corpus-file output-file\n", file);
-    printf(" Reads text from the corpus-file and will generate \n");
+    printf("Usage: %s n-grams input-file output-file\n", file);
+    printf(" Reads text from the input-file and will generate \n");
     printf(" an output file using a markov chain %s will override\n", file);
     printf(" an existing output file or make one if one does not exist");
     printf(" n-grams must be a positive integer negative or non integers\n");
@@ -16,12 +23,12 @@ void grow_word_array(){
 
 }
 
-void tokenize(FILE * corpus){
+void tokenize(FILE * input){
     char buff[255];
     char *token;
 
-    while(fgets(buff, 255, corpus)){
-        token = strtok(buff, " \t\n");
+    while(fgets(buff, 255, input)){
+        token = strtok(buff, " \t\n\r\v\f");
         while(token != NULL){
             if(num_words + 1 == word_array_size){
                 grow_word_array();
@@ -55,7 +62,7 @@ void generate_n_grams(int n_grams){
         for(int ith_word = 0; ith_word < n_grams; ith_word++){
             if(index + n_grams - 1 >= num_words) break;
            
-           char *str = word_array[index + ith_word];
+            char *str = word_array[index + ith_word];
             cur_n_gram[ith_word] = str;
         
         }
@@ -73,6 +80,7 @@ void generate_markov_chain(int n_grams){
 
 	
         int len = 0;
+        //Get length to allocate for key
         for(int word = 0; word < n_grams - 1; word++) len += strlen(cur_n_gram[word]);
        
         char *key = malloc((len + n_grams-1 ) * sizeof(char));
@@ -85,7 +93,7 @@ void generate_markov_chain(int n_grams){
         int hash_key = (int) hash(key);
         markov_chain *entry;
         HASH_FIND_INT(m_chain, &hash_key, entry);
-
+        //Add entry if not found
         if(entry == NULL){
             
             entry = (markov_chain *) malloc(sizeof(markov_chain));
@@ -97,6 +105,7 @@ void generate_markov_chain(int n_grams){
 
             HASH_ADD_INT(m_chain, hash_value ,entry);
         }else{
+            //If found adds word to possible next
             (entry)-> cur_index ++;
             (entry) -> possible_next[(entry)->cur_index] = cur_n_gram[n_grams - 1];
         }
@@ -132,6 +141,10 @@ char * random_state(){
 	unsigned int num_states;
 	num_states = HASH_COUNT(m_chain);
 
+    if(num_states == 0){
+        exit(-1);
+    }
+
 	int random = rand() % num_states;
 	markov_chain *entry = m_chain;
 	int i = 0;
@@ -165,8 +178,10 @@ void babble(FILE *output, unsigned int amount, char * state){
 		strcat(next_state, " ");
 		strcat(next_state, next);
 	}else{
-		//TODO edge case?	
+        next_state = malloc(strlen(next) * sizeof(char));
+        strcpy(next_state, next);
 	}
+
 	free(state);
 	amount = amount - 1;
 	babble(output,amount,next_state);
@@ -179,39 +194,43 @@ int main(int argc, char ** argv){
     if(argc != 4){
         printf("Not enough inputs\n");
         usage(argv[0]);
-		exit(0);
+        exit(-1);
     }
+
 	srand((unsigned) time(NULL));
     
     int n_grams = atoi(argv[1]);
     if(n_grams <= 1){
         printf("%s is not a valid input\n",argv[1]);
         usage(argv[0]);
-		exit(0);
+        exit(-1);
     }
+
     FILE *in = fopen(argv[2],"r");
     FILE *out = fopen(argv[3], "w+");
 
     if(in == NULL){
         printf("The file %s was not found\n", argv[2]);
         usage(argv[0]);
-		exit(0);
+        exit(-1);
     }
+
     word_array_size = 200;
     word_array = (char **) malloc(word_array_size * sizeof(char *));
     num_words = 0;
 
-    tokenize(in);
 
+    tokenize(in);
+    fclose(in);
+    if(num_words < n_grams) exit(-1);
     generate_n_grams(n_grams);
     free(word_array);
-
     generate_markov_chain(n_grams);
 
 	char * rand_words = random_state();
-	//fputs(rand_words, out);
-	//fputs(" ", out);
-	babble(out, 3999,rand_words);
+
+	babble(out, 3999, rand_words);
+    fclose(out);
 
     return 0;
 }
