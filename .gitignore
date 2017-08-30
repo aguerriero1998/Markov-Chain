@@ -1,7 +1,8 @@
 uthash.h
+tests
 Unity
 sample.txt
 *.txt
 main
-main.o
+*.o
 *.swp
