@@ -21,5 +21,8 @@ unity.o: Unity/src/unity.c Unity/src/unity.h
 main.o: main.c markov.h
 	$(CC) $(CFLAGS) main.c
 
+markov.o: markov.c
+	$(CC) $(CFLAGS) markov.c
+
 clean:
 	rm *.o	
