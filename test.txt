@@ -1,0 +1,6 @@
+
+This is     a string to test n-gram markov chain word 
+predition
+
+
+on
