@@ -3,8 +3,9 @@
 #include <stdlib.h>
 #include <time.h>
 #include "uthash.h"
+#include "markov.h"
 
-typedef char ** n_gram;
+//typedef char ** n_gram;
 
 typedef struct{
     char * cur_state;
@@ -16,18 +17,18 @@ typedef struct{
 
 markov_chain *m_chain = NULL; 
 
-char **word_array;
-int num_words;
-int word_array_size;
+//char **word_array;
+//int num_words;
+//int word_array_size;
 
-n_gram *n_gram_array;
-int num_n_grams;
+//n_gram *n_gram_array;
+//int num_n_grams;
 
 
 int main(int argc, char ** argv);
 void usage(char *file);
-void tokenize(FILE * corpus);
-void generate_n_grams(int n_grams);
+//void tokenize(FILE * corpus);
+//void generate_n_grams(int n_grams);
 unsigned long hash(char *str);
 void generate_markov_chain(int n_grams);
 void babble(FILE *out, unsigned int amount, char * state);
