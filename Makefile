@@ -18,7 +18,7 @@ unit_tests.o: unit_tests.c
 unity.o: Unity/src/unity.c Unity/src/unity.h
 	$(CC) $(CFLAGS) Unity/src/unity.c
 
-main.o: main.c main.h markov.h
+main.o: main.c markov.h
 	$(CC) $(CFLAGS) main.c
 
 clean:
