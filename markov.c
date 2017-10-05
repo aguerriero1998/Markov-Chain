@@ -12,7 +12,7 @@ void tokenize(FILE * input){
             if(num_words + 1 == word_array_size){
                 grow_word_array();
             }
-            char *ptr = (char *) malloc(strlen(token) * sizeof(char));
+            char *ptr = (char *) malloc((strlen(token)+1) * sizeof(char));
             strcpy(ptr, token);
             word_array[num_words] = ptr;
             num_words ++;
@@ -76,7 +76,7 @@ void generate_markov_chain(int n_grams){
         //Get length to allocate for key
         for(int word = 0; word < n_grams - 1; word++) len += strlen(cur_n_gram[word]);
        
-        char *key = malloc((len + n_grams-1 ) * sizeof(char));
+        char *key = malloc((len + n_grams-1 +1 ) * sizeof(char));
         strcpy(key, cur_n_gram[0]);
         for(int word = 1; word < n_grams-1; word ++){
             key = strcat(key, " ");
@@ -108,13 +108,19 @@ void generate_markov_chain(int n_grams){
 
 char * next_word(char * curr_state){
     int hash_key = (int) hash(curr_state);
+    
     markov_chain *entry;
     HASH_FIND_INT(m_chain, &hash_key, entry);
 
 	if(entry != NULL){
-		int index = rand();
-		index = index & entry->cur_index;
-		return entry->possible_next[index];
+        int index;
+        if(entry->cur_index != 0){
+		    index = rand();
+		    index = index % entry->cur_index;
+        }else index = 0;
+
+            return entry->possible_next[index];
+
 	}
 	return NULL;
 }
