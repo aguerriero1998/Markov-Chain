@@ -20,8 +20,6 @@ void tokenize(FILE * input){
         }
     }
 
-    
-
     return;
 }
 
@@ -75,8 +73,9 @@ void generate_markov_chain(int n_grams){
         int len = 0;
         //Get length to allocate for key
         for(int word = 0; word < n_grams - 1; word++) len += strlen(cur_n_gram[word]);
-       
-        char *key = malloc((len + n_grams-1 +1 ) * sizeof(char));
+        
+        //total size of key : len == size of all words;n-grams - 1 spaces; 1 byte for '\0'
+        char *key = malloc((len + n_grams-1 + 1 ) * sizeof(char));
         strcpy(key, cur_n_gram[0]);
         for(int word = 1; word < n_grams-1; word ++){
             key = strcat(key, " ");
@@ -149,10 +148,13 @@ void babble(FILE *output, unsigned int amount, char * state){
 	if(amount % 20 == 0){ 
 		fputs("\n", output);
 	}
-	if(amount == 0) return;
 
 	char *next = next_word(state);
-	if(next == NULL) return;
+
+	if(next == NULL || amount == 0){
+        free(state);
+        return;
+    }
 
 	fputs(next, output);
 	fputs(" ", output);
@@ -173,7 +175,8 @@ void babble(FILE *output, unsigned int amount, char * state){
 
 	free(state);
 	amount = amount - 1;
-	babble(output,amount,next_state);
+
+    babble(output,amount,next_state);
 
 }
 
