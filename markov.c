@@ -180,4 +180,15 @@ void babble(FILE *output, unsigned int amount, char * state){
 
 }
 
+void free_all(){
+    
+    for(int i = 0 ; i < num_words; i++){
+      //  free(word_array[i]);
+    }
+   // free(word_array);
 
+    for(int i = 0; i < num_n_grams; i++){
+ //       free(n_gram_array[i]);
+    }
+  //  free(n_gram_array);
+}

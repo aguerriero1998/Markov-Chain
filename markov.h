@@ -35,3 +35,4 @@ void generate_markov_chain(int n_grams);
 void babble(FILE *out, unsigned int amount, char * state);
 char * random_state();
 char * next_word(char * curr_state);
+void free_all();
