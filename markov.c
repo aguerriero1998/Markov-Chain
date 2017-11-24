@@ -143,6 +143,23 @@ void generate_markov_chain(int n_grams){
 
 }
 
+void free_markov_chain(int n_grams){
+    markov_chain *entry;
+    //iterate over hash table
+    for(entry=m_chain; entry != NULL;  ){
+        HASH_DEL(m_chain, entry);
+        free(entry->cur_state);
+        for(int i = 0;i <= entry->cur_index; i++){
+            free((entry)->possible_next[i]);
+        }
+        free(entry->possible_next);
+        markov_chain * entry_copy = entry;
+        entry=entry->hh.next;
+        free(entry_copy);
+    }
+    HASH_CLEAR(hh,m_chain);
+}
+
 char * next_word(char * curr_state){
     int hash_key = (int) hash(curr_state);
     
@@ -208,13 +225,13 @@ void babble(FILE *output, unsigned int amount, char * state){
 		strcat(next_state, next);
 	    free(state);
 	}else{
-        next_state = malloc(strlen(next) * sizeof(char));
-        strcpy(next_state, next);
+        next_state = copy_word(next);
+        free(state);
 	}
 
 	amount = amount - 1;
 
-    babble(output,amount,next_state);
+    babble(output, amount, next_state);
 
 }
 

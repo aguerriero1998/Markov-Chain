@@ -60,6 +60,7 @@ int main(int argc, char ** argv){
 	babble(out, 3999, rand_words);
 
     fclose(out);
+    free_markov_chain(n_grams);
     
     return 0;
 }

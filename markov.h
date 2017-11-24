@@ -40,3 +40,4 @@ char * next_word(char * curr_state);
 char * copy_str(char *string);
 void free_word_array();
 void free_n_grams(int n_grams);
+void free_markov_chain(int n_grams);
