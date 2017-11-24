@@ -51,13 +51,15 @@ int main(int argc, char ** argv){
     fclose(in);
     if(num_words < n_grams) exit(-1);
     generate_n_grams(n_grams);
-    free(word_array);
+    free_word_array();
     generate_markov_chain(n_grams);
+    //free_n_grams(n_grams);
 
 	char * rand_words = random_state();
 
 	babble(out, 3999, rand_words);
-    fclose(out);
 
+    fclose(out);
+    
     return 0;
 }

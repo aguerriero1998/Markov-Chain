@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
@@ -35,4 +36,7 @@ void generate_markov_chain(int n_grams);
 void babble(FILE *out, unsigned int amount, char * state);
 char * random_state();
 char * next_word(char * curr_state);
-void free_all();
+
+char * copy_str(char *string);
+void free_word_array();
+void free_n_grams(int n_grams);
