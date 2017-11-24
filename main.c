@@ -53,7 +53,7 @@ int main(int argc, char ** argv){
     generate_n_grams(n_grams);
     free_word_array();
     generate_markov_chain(n_grams);
-    //free_n_grams(n_grams);
+    free_n_grams(n_grams);
 
 	char * rand_words = random_state();
 

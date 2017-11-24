@@ -71,13 +71,19 @@ void generate_n_grams(int n_grams){
 }
 
 void free_n_grams(int n_grams){
-    for(int i = 0; i < num_n_grams; i++){
+
+    for(int i = 0; i < num_words; i++){
+    
         n_gram curr = n_gram_array[i];
+
         for(int j = 0; j < n_grams; j++){
-            free(curr[i]);
+            if(i + n_grams - 1 >= num_words) break;
+            free(curr[j]);
         }
+        
         free(curr);
     }
+
     free(n_gram_array);
 }
 
@@ -101,12 +107,14 @@ void generate_markov_chain(int n_grams){
         for(int word = 0; word < n_grams - 1; word++) len += strlen(cur_n_gram[word]);
         
         //total size of key : len == size of all words;n-grams - 1 spaces; 1 byte for '\0'
-        char *key = (char *) malloc((len + n_grams-1 + 1 ) * sizeof(char));
-        strcpy(key, cur_n_gram[0]);
+        char to_copy_key[len + 1];
+        strcpy(to_copy_key, cur_n_gram[0]);
         for(int word = 1; word < n_grams-1; word ++){
-            key = strcat(key, " ");
-            key = strcat(key, copy_word(cur_n_gram[word]));
+            strcat(to_copy_key, " ");
+            strcat(to_copy_key, cur_n_gram[word]);
         }
+
+        char *key = copy_word(to_copy_key);
 
 
         int hash_key = (int) hash(key);
